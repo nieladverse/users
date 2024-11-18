@@ -7,32 +7,43 @@ import { UsersService } from 'src/users/services/user.service';
 export class AuthService {
   private readonly jwtSecret = process.env.JWT_SECRET;
   private blacklistedTokens: Set<string> = new Set();
+
+  /**
+   * Constructor for AuthService
+   * @param usersService - Service to manage user-related operations
+   * @param jwtService - Service for handling JWT tokens
+   */
   constructor(
     @Inject(UsersService)
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
   ) {}
 
+  /**
+   * Handles user login
+   * @param loginDto - Data transfer object containing user credentials
+   * @returns Object with user details and tokens
+   */
   async login(loginDto: LoginDto) {
     try {
-      // Simular búsqueda de usuario (reemplazar con tu lógica de base de datos)
+      // Simulate user search (replace with your database logic)
       const user = await this.usersService.findByEmail(loginDto.email);
 
       if (!user) {
-        throw new UnauthorizedException('Credenciales inválidas');
+        throw new UnauthorizedException('Invalid credentials');
       }
 
-      // Validar contraseña
+      // Validate password
       const isPasswordValid = await this.comparePasswords(
         loginDto.password,
         user.password,
       );
 
       if (!isPasswordValid) {
-        throw new UnauthorizedException('Credenciales inválidas');
+        throw new UnauthorizedException('Invalid credentials');
       }
 
-      // Generar tokens
+      // Generate tokens
       const accessToken = this.generateAccessToken(user);
       const refreshToken = this.generateRefreshToken(user);
 
@@ -40,52 +51,67 @@ export class AuthService {
         user: {
           id: user.id,
           email: user.email,
-          // otros campos que quieras devolver
+          // other fields you want to return
         },
         accessToken,
         refreshToken,
       };
     } catch (error) {
-      throw new UnauthorizedException('Error al iniciar sesión');
+      throw new UnauthorizedException('Error during login');
     }
   }
 
+  /**
+   * Handles user logout
+   * @param token - The token to be blacklisted
+   * @returns A message confirming successful logout
+   */
   logout(token: string) {
-    // Agregar token a lista negra para invalidarlo
+    // Add the token to the blacklist to invalidate it
     this.blacklistedTokens.add(token);
-    return { message: 'Logout exitoso' };
+    return { message: 'Logout successful' };
   }
 
+  /**
+   * Renews the access token using a refresh token
+   * @param refreshToken - The refresh token to validate and use
+   * @returns A new access token
+   */
   async renewToken(refreshToken: string) {
     try {
-      // Verificar si el refresh token está en la lista negra
+      // Check if the refresh token is blacklisted
       if (this.blacklistedTokens.has(refreshToken)) {
-        throw new UnauthorizedException('Token inválido');
+        throw new UnauthorizedException('Invalid token');
       }
 
-      // Verificar y decodificar el refresh token
+      // Verify and decode the refresh token
       const decoded = this.jwtService.verify(refreshToken, {
         secret: this.jwtSecret,
       });
 
-      // Buscar usuario (reemplazar con tu lógica de base de datos)
+      // Find the user (replace with your database logic)
       const user = await this.usersService.findByEmail(decoded.email);
 
       if (!user) {
-        throw new UnauthorizedException('Usuario no encontrado');
+        throw new UnauthorizedException('User not found');
       }
 
-      // Generar nuevo access token
+      // Generate a new access token
       const newAccessToken = this.generateAccessToken(user);
 
       return {
         accessToken: newAccessToken,
       };
     } catch (error) {
-      throw new UnauthorizedException('No se pudo renovar el token');
+      throw new UnauthorizedException('Could not renew token');
     }
   }
 
+  /**
+   * Generates an access token for the given user
+   * @param user - The user for whom the token is generated
+   * @returns A signed JWT access token
+   */
   private generateAccessToken(user: any): string {
     return this.jwtService.sign(
       {
@@ -94,11 +120,16 @@ export class AuthService {
       },
       {
         secret: this.jwtSecret,
-        expiresIn: '15m', // Token de acceso de corta duración
+        expiresIn: '15m', // Short-lived access token
       },
     );
   }
 
+  /**
+   * Generates a refresh token for the given user
+   * @param user - The user for whom the token is generated
+   * @returns A signed JWT refresh token
+   */
   private generateRefreshToken(user: any): string {
     return this.jwtService.sign(
       {
@@ -107,11 +138,17 @@ export class AuthService {
       },
       {
         secret: this.jwtSecret,
-        expiresIn: '7d', // Token de refresco de larga duración
+        expiresIn: '7d', // Long-lived refresh token
       },
     );
   }
 
+  /**
+   * Compares a plain text password with a hashed password
+   * @param plainPassword - The plain text password
+   * @param hashedPassword - The hashed password
+   * @returns A boolean indicating if the passwords match
+   */
   private async comparePasswords(
     plainPassword: string,
     hashedPassword: string,

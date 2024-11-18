@@ -15,6 +15,7 @@ import { JwtAuthGuard } from 'src/auth/guard/jwt.guard';
 import { UpdateUserDto } from 'src/users/dto/update-user.dto';
 import { UsersService } from 'src/users/services/user.service';
 import { User } from 'src/users/shemas/user.schema';
+import { CreateUserDto } from '../dto/create-user.dto';
 
 /**
  * Controller for handling user-related API endpoints.
@@ -33,7 +34,7 @@ export class UsersController {
    * @returns The created user document.
    */
   @Post()
-  async createUser(@Body() createUserDto: any) {
+  async createUser(@Body() createUserDto: CreateUserDto) {
     return this.usersService.createUser(createUserDto);
   }
 
