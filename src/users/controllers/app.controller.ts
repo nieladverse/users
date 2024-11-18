@@ -9,20 +9,20 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
-import { UpdateUserDto } from 'src/dto/update-user.dto';
-import { AppService } from 'src/services/app.service';
-import { User } from 'src/shemas/user.schema';
+import { UpdateUserDto } from 'src/users/dto/update-user.dto';
+import { UsersService } from 'src/users/services/user.service';
+import { User } from 'src/users/shemas/user.schema';
 
 /**
  * Controller for handling user-related API endpoints.
  */
 @Controller('users')
-export class AppController {
+export class UsersController {
   /**
    * Injects the application service into the controller.
-   * @param appService - The service responsible for user-related operations.
+   * @param usersService - The service responsible for user-related operations.
    */
-  constructor(private readonly appService: AppService) {}
+  constructor(private readonly usersService: UsersService) {}
 
   /**
    * Endpoint to create a new user.
@@ -31,7 +31,7 @@ export class AppController {
    */
   @Post()
   async createUser(@Body() createUserDto: any) {
-    return this.appService.createUser(createUserDto);
+    return this.usersService.createUser(createUserDto);
   }
 
   /**
@@ -40,7 +40,7 @@ export class AppController {
    */
   @Get()
   async findAllUsers() {
-    return this.appService.findAllUsers();
+    return this.usersService.findAllUsers();
   }
 
   /**
@@ -50,7 +50,7 @@ export class AppController {
    */
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<User> {
-    return this.appService.findOne(id);
+    return this.usersService.findOne(id);
   }
 
   /**
@@ -61,7 +61,7 @@ export class AppController {
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT) // Sends a 204 status code for successful deletions.
   async delete(@Param('id') id: string): Promise<void> {
-    await this.appService.delete(id);
+    await this.usersService.delete(id);
   }
 
   /**
@@ -75,6 +75,6 @@ export class AppController {
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<User> {
-    return this.appService.update(id, updateUserDto);
+    return this.usersService.update(id, updateUserDto);
   }
 }
