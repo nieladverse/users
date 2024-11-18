@@ -1,6 +1,28 @@
 # User Management and Authentication Microservices
 
-A robust backend implementation showcasing microservices architecture with NestJS, featuring comprehensive user management and JWT-based authentication services.
+A robust backend implementation showcasing microservices architecture with NestJS, featuring comprehensive user management and JWT-based authentication services. This API is publicly available for developers to integrate into their applications.
+
+## 🌐 Public API Access
+
+This API is publicly available for developers! Feel free to use it in your projects.
+
+### Base URL
+```
+https://users-5x41.onrender.com/
+```
+
+### Rate Limiting
+- 100 requests per hour per IP address
+- Additional rate limits may apply to specific endpoints
+
+### Authentication
+To use protected endpoints:
+1. Create an account using the registration endpoint
+2. Obtain your JWT token through the login endpoint
+3. Include the token in your requests' Authorization header:
+   ```
+   Authorization: Bearer your_jwt_token
+   ```
 
 ## 🚀 Features
 
@@ -17,6 +39,35 @@ A robust backend implementation showcasing microservices architecture with NestJ
 - Token renewal system
 - Refresh token mechanism
 - Request validation using pipes
+
+## 📡 API Usage Examples
+
+### Creating a New User
+```bash
+curl -X POST https://users-5x41.onrender.com/users \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "user@example.com",
+    "password": "securepassword",
+    "username": "newuser"
+  }'
+```
+
+### Login
+```bash
+curl -X POST https://users-5x41.onrender.com/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "user@example.com",
+    "password": "securepassword"
+  }'
+```
+
+### Getting User Details (Protected Route)
+```bash
+curl -X GET https://users-5x41.onrender.com/users/me \
+  -H "Authorization: Bearer your_jwt_token"
+```
 
 ## 🛠️ Technical Stack
 
@@ -36,59 +87,49 @@ A robust backend implementation showcasing microservices architecture with NestJ
 
 ## 📋 API Endpoints
 
-### User Service
+### Public Endpoints
 
 ```markdown
+POST /auth/login         - User login
 POST /users              - Create new user
-GET /users               - Retrieve all users (Protected)
+```
+
+### Protected Endpoints (Require Authentication)
+
+```markdown
+GET /users               - Retrieve all users
 GET /users/:id           - Retrieve specific user
 DELETE /users/:id        - Delete user
 PUT /users/:id           - Update user
 GET /users/email/:email  - Find user by email
-```
-
-### Authentication Service
-
-```markdown
-POST /auth/login         - User login
 POST /auth/logout        - User logout
 POST /auth/renew-token   - Refresh access token
 ```
 
-## 🚦 Getting Started
+## 📊 Response Formats
 
-1. **Prerequisites**
-   ```bash
-   node.js >= 14.x
-   MongoDB >= 4.x
-   ```
+All API responses follow this standard format:
 
-2. **Installation**
-   ```bash
-   # Clone the repository
-   git clone [your-repo-url]
+```json
+{
+  "success": true,
+  "data": {
+    // Response data here
+  },
+  "message": "Operation successful"
+}
+```
 
-   # Install dependencies
-   npm install
-   ```
-
-3. **Environment Setup**
-   Create a `.env` file in the root directory:
-   ```env
-   MONGODB_URI=your_mongodb_uri
-   JWT_SECRET=your_jwt_secret
-   JWT_REFRESH_SECRET=your_refresh_token_secret
-   ```
-
-4. **Running the Application**
-   ```bash
-   # Development
-   npm run start:dev
-
-   # Production
-   npm run build
-   npm run start:prod
-   ```
+### Error Response Format
+```json
+{
+  "success": false,
+  "error": {
+    "code": "ERROR_CODE",
+    "message": "Error description"
+  }
+}
+```
 
 ## 🔒 Security Features
 
@@ -99,27 +140,33 @@ POST /auth/renew-token   - Refresh access token
 - Token refresh mechanism
 - Secure logout handling
 
-## 🧪 Implementation Details
-
-The project implements several best practices:
-
-- **Validation Pipeline:** Ensures data integrity through DTOs
-- **Guard Implementation:** Protects routes from unauthorized access
-- **Error Handling:** Comprehensive exception handling with appropriate HTTP status codes
-- **Service Layer:** Business logic separation for better maintainability
-- **Model Integration:** Mongoose models with TypeScript support
-
 ## 📚 API Documentation
 
-To view the detailed API documentation:
+Interactive API documentation is available at:
+```
+https://users-5x41.onrender.com/
+```
 
-1. Start the application
-2. Navigate to `/api` endpoint for Swagger documentation
+Features:
+- Interactive endpoint testing
+- Request/response examples
+- Authentication guide
+- Schema definitions
 
-## 🤝 Contributing
+## 💬 Support
 
-Feel free to submit issues and enhancement requests.
+Need help? Here's how you can reach us:
+- Create an issue in this repository
+- Email: [nieladverse@gmail.com]
 
 ## 📝 License
 
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed under the MIT License - feel free to use it in your own projects!
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
+
+## ⭐ Show your support
+
+Give a ⭐️ if this project helped you!
