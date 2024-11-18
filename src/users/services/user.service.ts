@@ -114,6 +114,16 @@ export class UsersService {
     }
   }
 
-
-  
+  /**
+   * Find a user by their email address.
+   * @param email - The email address to search for.
+   * @returns A promise that resolves with the found user or throws an exception if not found.
+   */
+  async findByEmail(email: string): Promise<User> {
+    const user = await this.userModel.findOne({ email }).exec();
+    if (!user) {
+      throw new NotFoundException(`User with email ${email} was not found`);
+    }
+    return user;
+  }
 }

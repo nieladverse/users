@@ -8,7 +8,10 @@ import {
   Param,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
+import { GetUser } from 'src/auth/decorators/get-user.decorator';
+import { JwtAuthGuard } from 'src/auth/guard/jwt.guard';
 import { UpdateUserDto } from 'src/users/dto/update-user.dto';
 import { UsersService } from 'src/users/services/user.service';
 import { User } from 'src/users/shemas/user.schema';
@@ -39,7 +42,8 @@ export class UsersController {
    * @returns An array of all user documents.
    */
   @Get()
-  async findAllUsers() {
+  @UseGuards(JwtAuthGuard)
+  async findAllUsers(@GetUser() user: any) {
     return this.usersService.findAllUsers();
   }
 
@@ -76,5 +80,15 @@ export class UsersController {
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<User> {
     return this.usersService.update(id, updateUserDto);
+  }
+
+  /**
+   * Endpoint to find a user by email.
+   * @param email - The email of the user to find.
+   * @returns The user document if found.
+   */
+  @Get('email/:email')
+  async findByEmail(@Param('email') email: string): Promise<User> {
+    return this.usersService.findByEmail(email);
   }
 }
