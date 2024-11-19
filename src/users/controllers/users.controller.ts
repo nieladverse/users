@@ -10,11 +10,11 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
-import { GetUser } from 'src/auth/decorators/get-user.decorator';
-import { JwtAuthGuard } from 'src/auth/guard/jwt.guard';
-import { UpdateUserDto } from 'src/users/dto/update-user.dto';
-import { UsersService } from 'src/users/services/user.service';
-import { User } from 'src/users/shemas/user.schema';
+import { GetUser } from '../../auth/decorators/get-user.decorator';
+import { JwtAuthGuard } from '../../auth/guard/jwt.guard';
+import { UpdateUserDto } from '../dto/update-user.dto';
+import { UsersService } from '../services/user.service';
+import { User } from '../shemas/user.schema';
 import { CreateUserDto } from '../dto/create-user.dto';
 
 /**

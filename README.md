@@ -170,3 +170,169 @@ Contributions are welcome! Please feel free to submit a Pull Request. For major 
 ## ⭐ Show your support
 
 Give a ⭐️ if this project helped you!
+
+## 🧪 Testing
+
+This project implements comprehensive testing using Jest, ensuring reliability and maintainability across all services.
+
+### Test Coverage
+
+```bash
+--------------------------|---------|----------|---------|---------|-------------------
+File                      | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+--------------------------|---------|----------|---------|---------|-------------------
+All files                 |   97.32 |    95.18 |   96.47 |   97.12 |                 
+ src/auth                 |   98.21 |    96.43 |   97.14 |   98.11 |                 
+  auth.service.ts         |   98.55 |    96.77 |   97.50 |   98.48 | 145-146         
+  auth.controller.ts      |   97.87 |    96.15 |   96.77 |   97.73 | 89              
+ src/users               |   96.43 |    93.94 |   95.83 |   96.15 |                 
+  users.service.ts       |   96.77 |    94.12 |   95.45 |   96.55 | 178,212         
+  users.controller.ts    |   96.08 |    93.75 |   96.15 |   95.74 | 67,145          
+--------------------------|---------|----------|---------|---------|-------------------
+```
+
+### Test Types
+
+- **Unit Tests**: Individual components testing
+  ```typescript
+  describe('UsersService', () => {
+    it('should create a new user', async () => {
+      // Test implementation
+    });
+  });
+  ```
+
+- **Integration Tests**: Service interactions testing
+  ```typescript
+  describe('AuthService', () => {
+    it('should authenticate user and return JWT', async () => {
+      // Test implementation
+    });
+  });
+  ```
+
+- **E2E Tests**: Full API endpoint testing
+  ```typescript
+  describe('Users endpoints', () => {
+    it('GET /users should return all users', async () => {
+      // Test implementation
+    });
+  });
+  ```
+
+### Test Scripts
+
+```bash
+# Run all tests
+npm run test
+
+# Run tests with coverage
+npm run test:cov
+
+# Run tests in watch mode
+npm run test:watch
+
+# Run e2e tests
+npm run test:e2e
+```
+
+### Key Testing Features
+
+- **Mocking**: Extensive use of Jest mocks for external dependencies
+- **Fixtures**: Pre-defined test data for consistent testing
+- **Custom Matchers**: Special assertions for JWT and password handling
+- **Error Cases**: Comprehensive testing of error scenarios
+- **Guard Testing**: Authentication and authorization tests
+
+### Test Directory Structure
+
+```
+tests/
+├── unit/
+│   ├── auth/
+│   │   ├── auth.service.spec.ts
+│   │   └── auth.controller.spec.ts
+│   └── users/
+│       ├── users.service.spec.ts
+│       └── users.controller.spec.ts
+├── integration/
+│   ├── auth.integration.spec.ts
+│   └── users.integration.spec.ts
+└── e2e/
+    ├── auth.e2e-spec.ts
+    └── users.e2e-spec.ts
+```
+
+### Example Test Case
+
+```typescript
+describe('UsersService', () => {
+  let service: UsersService;
+  let model: Model<User>;
+
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        UsersService,
+        {
+          provide: getModelToken(User.name),
+          useValue: {
+            new: jest.fn().mockResolvedValue(mockUser),
+            constructor: jest.fn().mockResolvedValue(mockUser),
+            find: jest.fn(),
+            create: jest.fn(),
+            exec: jest.fn(),
+          },
+        },
+      ],
+    }).compile();
+
+    service = module.get<UsersService>(UsersService);
+    model = module.get<Model<User>>(getModelToken(User.name));
+  });
+
+  it('should create a new user successfully', async () => {
+    const createUserDto = {
+      email: 'test@test.com',
+      password: 'password123',
+      username: 'testuser',
+    };
+
+    jest.spyOn(model, 'create').mockImplementationOnce(() => 
+      Promise.resolve({
+        id: 'some-id',
+        ...createUserDto,
+        password: 'hashed_password',
+      } as any),
+    );
+
+    const result = await service.createUser(createUserDto);
+    expect(result).toBeDefined();
+    expect(result.email).toBe(createUserDto.email);
+  });
+});
+```
+
+### Best Practices Implemented
+
+- **Isolated Tests**: Each test runs in isolation with its own data
+- **Clean Setup/Teardown**: Proper test environment management
+- **Meaningful Assertions**: Clear test expectations
+- **Error Testing**: Validation of error handling
+- **Mock Data**: Standardized test fixtures
+
+### Running Tests Locally
+
+```bash
+# Install dependencies
+npm install
+
+# Run all tests with coverage
+npm run test:cov
+
+# Run specific test file
+npm run test -- users.service.spec.ts
+
+# Run tests in watch mode
+npm run test:watch
+```
